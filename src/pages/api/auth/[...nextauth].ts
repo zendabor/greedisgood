@@ -1,12 +1,12 @@
 import { api } from '@/api/api';
-import NextAuth, { Awaitable, NextAuthOptions, User } from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
-            async authorize(credentials: Awaitable<User | null>) {
+            async authorize(credentials: Record<string, string> | undefined) {
                 try {
                     const response = await api.post('login', credentials);
                     if (response) {

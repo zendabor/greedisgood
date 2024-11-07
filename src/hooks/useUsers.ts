@@ -23,20 +23,21 @@ export const useUsers = () => {
         mutate(newUsers, { revalidate: false })
     }
 
-    const filteredUsers = () => {
-        const { email, name } = query
-        if (!email || !name) {
-            mutate(undefined, { revalidate: false })
+    const filteredUsers = async () => {
+        const { email, name } = query;
+
+        if (!email && !name) {
+            await mutate(users, { revalidate: true })
             return
         }
 
         const filteredUsers = users?.filter(user => {
-            const bool = (user.email.includes(email)) || user.first_name.toLowerCase().includes(name.toLowerCase())
+            const bool = (user.email.includes(String(email))) || user.first_name.toLowerCase().includes(String(name).toLowerCase())
             return bool
-        }
-        );
-        mutate(filteredUsers, { revalidate: false })
-    }
+        });
+
+        await mutate(filteredUsers, { revalidate: false });
+    };
 
     return { users, error, isLoading, addUser, deleteUser, filteredUsers, mutate }
 }

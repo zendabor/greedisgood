@@ -5,7 +5,7 @@ import { Path } from '@/consts/path';
 import { authType } from '@/consts/authForm';
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup';
-import { signIn } from 'next-auth/react';
+import { signIn, SignInResponse } from 'next-auth/react';
 
 export default function Login() {
   const schema = yup.object().shape({
@@ -27,9 +27,9 @@ export default function Login() {
 
   const router = useRouter();
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onSubmit = async (data: Record<string, string>) => {
     try {
-      const resp = await signIn('credentials', {
+      const resp: SignInResponse | undefined = await signIn('credentials', {
         redirect: false,
         ...data
       });

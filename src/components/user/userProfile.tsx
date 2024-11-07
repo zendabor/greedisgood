@@ -11,7 +11,6 @@ const UserProfile = ({ userKey }: { userKey: string[] }) => {
             <Typography component='span'>Email: {user.email}</Typography>
             <Avatar src={user.avatar} />
         </Container>
-        // <></>
     )
 }
 
