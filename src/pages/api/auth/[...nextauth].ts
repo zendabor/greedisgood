@@ -7,7 +7,6 @@ const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             async authorize(credentials: Awaitable<User | null>) {
-                console.log(credentials)
                 try {
                     const response = await api.post('login', credentials);
                     if (response) {
@@ -21,7 +20,11 @@ const authOptions: NextAuthOptions = {
                 }
             }
         })
-    ]
+    ],
+    pages: {
+        signIn: 'login',
+        error: 'error',
+    }
 };
 
 export default NextAuth(authOptions);
