@@ -11,3 +11,10 @@ export interface User {
 export interface userParams extends ParsedUrlQuery {
     id: string
 }
+
+export type atUser = {
+    first_name: string,
+    last_name: string,
+    email: string,
+    avatar: Blob[]
+}

@@ -35,9 +35,9 @@ function UserList() {
 
             </Grid2>
             {Session && <Button color='warning' sx={style.addUserBtn} onClick={() => setOpen(true)}>добавить</Button>}
-            {open && <Modal open={open} onClose={() => setOpen(false)}>
-                <ModalForm />
-            </Modal>}
+            <Modal open={open} onClose={() => setOpen(false)}>
+                <ModalForm onClose={setOpen} />
+            </Modal>
         </>
     );
 }

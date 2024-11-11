@@ -1,59 +1,97 @@
-import { Box, Button, Container, Input } from "@mui/material"
+import { Box, Button, Container, Input, Typography } from "@mui/material"
 import { useForm } from "react-hook-form";
 import { useUsers } from "@/hooks/useUsers";
 import style from './styles'
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup'
+import { Dispatch, SetStateAction } from "react";
 
-
-const ModalForm = () => {
+const ModalForm = ({ onClose }: { onClose: Dispatch<SetStateAction<boolean>> }) => {
     const schema = yup.object().shape({
         email: yup.string()
             .email('Некорректный email')
             .required('Email обязателен'),
-        lastname: yup.string()
+        last_name: yup.string()
             .min(3, 'ты короткий')
             .required('обязателен'),
-        name: yup.string()
+        first_name: yup.string()
             .min(3, 'ты короткий')
             .required('обязателен'),
+        avatar: yup.mixed<FileList>()
+            .required("Файл обязателен")
+            .test(
+                "fileSize",
+                "Размер файла не должен превышать 3 МБ",
+                value => value[0].size <= 3 * 1024 * 1024
+            )
+            .test(
+                "fileType",
+                "Допустимы только изображения",
+                value => ["image/jpeg"].includes(value[0].type)
+            )
+            .test(
+                "singleFile",
+                "Можно загрузить только один файл",
+                value => value.length === 1
+            ),
     });
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            name: '',
-            lastname: '',
-            email: ''
+            first_name: '',
+            last_name: '',
+            email: '',
+            avatar: undefined
         }
     });
 
     const { addUser } = useUsers()
 
-    const onSubmit = (data: any) => {
-        addUser({ ...data, avatar: '' })
+    const onSubmit = async (data: any) => {
+        addUser(data)
+        onClose(false)
     }
 
     return (
         <Container sx={style.formContainer}>
             <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={style.formBlock}>
+                {/* по хорошему конечно вынести дефолт инпуты в массив и замапить их так как все однотипные, но попозже */}
                 <Box>
                     <Input
-                        {...register('name')}
+                        {...register('first_name')}
                         type="text"
-                        placeholder={'name'} />
+                        placeholder='name' />
+                    {errors.first_name && <Typography>{errors.first_name.message}</Typography>}
                 </Box>
                 <Box>
                     <Input
-                        {...register('lastname')}
+                        {...register('last_name')}
                         type="text"
-                        placeholder={'lastname'} />
+                        placeholder='lastname' />
+                    {errors.last_name && <Typography>{errors.last_name.message}</Typography>}
                 </Box>
                 <Box>
                     <Input
                         {...register('email')}
                         type="email"
-                        placeholder={'email'} />
+                        placeholder='email' />
+                    {errors.email && <Typography>{errors.email.message}</Typography>}
                 </Box>
+                <Button
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    size="small"
+                    color="secondary"
+                >
+                    <Typography>загрузите аватар</Typography>
+                    <Box component='input'
+                        {...register('avatar')}
+                        sx={style.hiddenInput}
+                        type="file"
+                    />
+                </Button>
+                {errors.avatar && <Typography>{errors.avatar.message}</Typography>}
                 <Button variant="contained" type="submit">создать</Button>
             </Box>
         </Container>

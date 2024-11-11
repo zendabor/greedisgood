@@ -23,7 +23,7 @@ const avatarLink = {
 
 const addUserBtn = {
     position: 'absolute',
-    top: 2
+    top: 25
 }
 
 export default {

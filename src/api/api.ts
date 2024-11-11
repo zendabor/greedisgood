@@ -11,7 +11,7 @@ export const getUsers = async (): Promise<User[] | null> => {
     return null
 }
 
-export const getUser = async (id: string): Promise<User[] | null> => {
+export const getUser = async (id: string): Promise<User | null> => {
     const { data } = await api.get(`users/${id}`)
     if (data) return data.data
     return null

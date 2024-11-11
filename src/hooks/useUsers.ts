@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { getUsers } from '@/api/api'
-import type { User } from '@/types/user'
+import type { atUser, User } from '@/types/user'
 import { useId } from 'react';
 import { Path } from '@/consts/path';
 import { useRouter } from 'next/router';
@@ -10,11 +10,16 @@ export const useUsers = () => {
     const id = useId()
     const { query } = useRouter()
 
-    const addUser = async (user: User) => {
-        if (!users) return null
-        //на счет аватарки не знаю,можно типа фигануть через new formdata, но в самом апи я не нашел чтобы можно было слать картинки
-        const newUser: User = { ...user, id }
-        await mutate([...users, newUser], { revalidate: false })
+    const addUser = async (data: atUser) => {
+        if (!data) return null
+        const ava = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(data.avatar[0])
+            reader.onload = () => resolve(reader.result?.toString() || '')
+            reader.onerror = reject
+        })
+        const newUser: User = { ...data, id, avatar: ava }
+        await mutate([...users || [], newUser], { revalidate: false })
     }
 
     const deleteUser = (id: number | string) => {

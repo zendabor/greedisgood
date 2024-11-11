@@ -6,7 +6,7 @@ const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
-            async authorize(credentials: Record<string, string> | undefined) {
+            async authorize(credentials) {
                 try {
                     const response = await api.post('login', credentials);
                     if (response) {

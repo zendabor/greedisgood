@@ -6,6 +6,7 @@ import { authType } from '@/consts/authForm';
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup';
 import { signIn, SignInResponse } from 'next-auth/react';
+import type { Сredentials } from '@/types/credentials';
 
 export default function Login() {
   const schema = yup.object().shape({
@@ -25,19 +26,18 @@ export default function Login() {
     }
   });
 
-  const router = useRouter();
+  const { push } = useRouter();
 
-  const onSubmit = async (data: Record<string, string>) => {
+  const onSubmit = async (data: Сredentials) => {
     try {
       const resp: SignInResponse | undefined = await signIn('credentials', {
         redirect: false,
         ...data
       });
       if (resp?.ok) {
-        router.push(Path.profile);
+        push(Path.profile);
       }
       if (resp?.error) {
-        //знаю, что сюда надо message запхать
         setError('root', { message: resp?.error });
       }
     } catch (error) {
@@ -46,6 +46,7 @@ export default function Login() {
   };
 
   return (
+    //здесь был бы даже рад пояснению ибо перекопав форумы я так и не нашел почему string не может быть назначен string 
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <Input

@@ -9,9 +9,9 @@ export const Header = () => {
         <Box component='header' sx={style.header}>
             <ButtonGroup variant="text" component='nav' sx={{ gap: 1 }}>
                 <Button variant="outlined" href={Path.main} >Home</Button>
-                <Button variant="outlined" href={Path.login} >Auth</Button>
+                {!session && <Button variant="outlined" href={Path.login} >Auth</Button>}
                 <Button variant="outlined" href={Path.users}>Users</Button>
-                <Button variant="outlined" href={Path.profile}>Profile</Button>
+                {session && <Button variant="outlined" href={Path.profile}>Profile</Button>}
                 {session && <Button onClick={() => signOut()}>Sign out</Button>}
             </ButtonGroup>
         </Box >
