@@ -1,15 +1,11 @@
 
 import CustomError from '@/components/error/customError'
-import type { ErrorProps } from 'next/error'
 
-function Custom404({ statusCode }: ErrorProps) {
+function Custom404() {
     return (
-        <CustomError statusCode={statusCode} />
+        <CustomError statusCode={404} />
     )
 }
 
-Custom404.getInitialProps = async () => {
-    return { statusCode: 404 }
-}
 
 export default Custom404
