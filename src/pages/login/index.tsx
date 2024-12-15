@@ -1,7 +1,5 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Input, Typography } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { Path } from '@/consts/path';
 import { authType } from '@/consts/authForm';
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,20 +26,11 @@ export default function Login() {
     }
   });
 
-  const { push } = useRouter();
-
   const onSubmit: SubmitHandler<{ email: string; password: string }> = async (data) => {
     try {
       const resp: SignInResponse | undefined = await signIn('credentials', {
-        redirect: false,
         ...data
       });
-      if (resp?.ok) {
-        push(Path.profile);
-      }
-      if (resp?.error) {
-        setError('root', { message: resp?.error });
-      }
     } catch (error) {
       setError('root', { message: 'Произошла ошибка при авторизации' });
     }

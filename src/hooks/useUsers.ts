@@ -32,7 +32,7 @@ export const useUsers = () => {
         const { email, name } = query;
 
         if (!email && !name) {
-            await mutate(users, { revalidate: true })
+            await mutate(users, { revalidate: false })
             return
         }
 

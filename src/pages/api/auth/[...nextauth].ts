@@ -1,5 +1,6 @@
 import { api } from '@/api/api';
 import NextAuth, { NextAuthOptions } from 'next-auth';
+import { JWT, JWTDecodeParams } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 const authOptions: NextAuthOptions = {
@@ -27,7 +28,20 @@ const authOptions: NextAuthOptions = {
     pages: {
         signIn: 'login',
         error: 'error',
-    }
+    },
+    jwt: {
+        secret: 'secret',
+        async encode({ token, secret }) {
+            return JSON.stringify(token);
+        },
+
+        async decode({ token, secret }: JWTDecodeParams): Promise<JWT | null> {
+            if (!token) {
+                return null;
+            }
+            return JSON.parse(token) as JWT;
+        },
+    },
 };
 
 export default NextAuth(authOptions);

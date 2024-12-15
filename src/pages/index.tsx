@@ -6,7 +6,7 @@ export default function Page() {
     return (
         <Container>
             {/* //ну типа как будто оно там должно быть */}
-            <Typography component='p'>Привет, {session?.user?.name || 'пользак'}!</Typography>
+            <Typography component='p'>Привет, {session?.user?.name || 'Сёма'}!</Typography>
         </Container>
     );
 }

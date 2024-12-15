@@ -8,13 +8,16 @@ import ModalForm from '../modalForm/modalForm';
 import { useState } from 'react';
 
 function UserList() {
-    const { users, error, deleteUser } = useUsers()
+    const { users, error, deleteUser, isLoading } = useUsers()
     const { data: Session } = useSession()
     const [open, setOpen] = useState(false)
+
+    if (isLoading) return <div>грузимся</div>
 
     if (error) return <div>Ошибка загрузки</div>;
 
     if (users?.length === 0) return <div>а нет никого</div>
+
 
     return (
         <>
