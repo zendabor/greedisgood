@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Input, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { Path } from '@/consts/path';
@@ -6,7 +6,6 @@ import { authType } from '@/consts/authForm';
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup';
 import { signIn, SignInResponse } from 'next-auth/react';
-import type { Сredentials } from '@/types/credentials';
 
 export default function Login() {
   const schema = yup.object().shape({
@@ -18,7 +17,10 @@ export default function Login() {
       .required('Пароль обязателен'),
   });
 
-  const { register, handleSubmit, formState: { errors }, setError } = useForm({
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<{
+    email: string;
+    password: string;
+  }>({
     resolver: yupResolver(schema),
     defaultValues: {
       email: 'eve.holt@reqres.in',
@@ -28,7 +30,7 @@ export default function Login() {
 
   const { push } = useRouter();
 
-  const onSubmit = async (data: Сredentials) => {
+  const onSubmit: SubmitHandler<{ email: string; password: string }> = async (data) => {
     try {
       const resp: SignInResponse | undefined = await signIn('credentials', {
         redirect: false,
@@ -46,20 +48,21 @@ export default function Login() {
   };
 
   return (
-    //здесь был бы даже рад пояснению ибо перекопав форумы я так и не нашел почему string не может быть назначен string 
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <Input
           {...register(authType.email)}
           type="email"
-          placeholder={authType.email} />
+          placeholder={authType.email}
+        />
         {errors.email && <Typography component='span' color='warning'>{errors.email.message}</Typography>}
       </div>
       <div>
         <Input
           {...register(authType.password)}
           type="password"
-          placeholder={authType.password} />
+          placeholder={authType.password}
+        />
         {errors.password && <Typography component='span' color='warning'>{errors.password.message}</Typography>}
       </div>
       {errors.root && <Typography component='span' color='warning'>{errors.root?.message || 'ошибочка'}</Typography>}

@@ -6,12 +6,15 @@ const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
             async authorize(credentials) {
                 try {
                     const response = await api.post('login', credentials);
                     if (response) {
-                        console.log(response)
-                        return response;
+                        return { id: response.data.token };
                     }
                     return null;
                 } catch (err) {

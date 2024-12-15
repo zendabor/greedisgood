@@ -22,10 +22,10 @@ export const useUsers = () => {
         await mutate([...users || [], newUser], { revalidate: false })
     }
 
-    const deleteUser = (id: number | string) => {
+    const deleteUser = async (id: number | string) => {
         if (!users) return null
         const newUsers = users?.filter((user) => user.id !== id)
-        mutate(newUsers, { revalidate: false })
+        await mutate(newUsers, { revalidate: false })
     }
 
     const filteredUsers = async () => {
@@ -37,12 +37,15 @@ export const useUsers = () => {
         }
 
         const filteredUsers = users?.filter(user => {
-            const bool = (user.email.includes(String(email))) || user.first_name.toLowerCase().includes(String(name).toLowerCase())
-            return bool
+            return (user.email.toLowerCase().includes(String(email))) || user.first_name.toLowerCase().includes(String(name).toLowerCase())
         });
 
         await mutate(filteredUsers, { revalidate: false });
     };
 
-    return { users, error, isLoading, addUser, deleteUser, filteredUsers, mutate }
+    const setFilterToDefault = async () => {
+        await mutate(users, { revalidate: false })
+    }
+
+    return { users, error, isLoading, addUser, deleteUser, filteredUsers, mutate, setFilterToDefault }
 }

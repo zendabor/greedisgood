@@ -8,12 +8,11 @@ import ModalForm from '../modalForm/modalForm';
 import { useState } from 'react';
 
 function UserList() {
-    const { users, error, isLoading, deleteUser } = useUsers()
+    const { users, error, deleteUser } = useUsers()
     const { data: Session } = useSession()
     const [open, setOpen] = useState(false)
 
     if (error) return <div>Ошибка загрузки</div>;
-    if (isLoading) return <div>Загрузка...</div>;
 
     if (users?.length === 0) return <div>а нет никого</div>
 
@@ -29,12 +28,12 @@ function UserList() {
                             <Typography component='span'>{user.email}</Typography>
                             <Avatar key={user.avatar} src={user.avatar} sx={style.avatar} alt='avatar' />
                         </Link>
-                        {Session && <Button color='warning' onClick={() => deleteUser(user.id)}>удалить</Button>}
+                        {!!Session && <Button color='warning' onClick={() => deleteUser(user.id)}>удалить</Button>}
                     </Card>
                 ))}
 
             </Grid2>
-            {Session && <Button color='warning' sx={style.addUserBtn} onClick={() => setOpen(true)}>добавить</Button>}
+            {!!Session && <Button color='warning' sx={style.addUserBtn} onClick={() => setOpen(true)}>добавить</Button>}
             <Modal open={open} onClose={() => setOpen(false)}>
                 <ModalForm onClose={setOpen} />
             </Modal>

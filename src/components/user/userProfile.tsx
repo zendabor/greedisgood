@@ -2,9 +2,8 @@ import { Avatar, Container, Typography } from "@mui/material"
 import useSWR from "swr";
 
 const UserProfile = ({ userKey }: { userKey: string[] }) => {
-    const { data: user, isLoading, error } = useSWR(userKey)
+    const { data: user, error } = useSWR(userKey)
     if (error) return <div>Ошибка загрузки</div>;
-    if (isLoading) return <div>Загрузка...</div>;
     return (
         <Container>
             <Typography component='h1'>{user.first_name} {user.last_name}</Typography>

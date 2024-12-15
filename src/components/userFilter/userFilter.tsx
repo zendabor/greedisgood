@@ -7,11 +7,26 @@ import { useEffect } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 const UserFilter = () => {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, watch, setValue } = useForm();
     const { push, query } = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { filteredUsers } = useUsers()
+    const { filteredUsers, setFilterToDefault } = useUsers()
+
+    const allValues = watch();
+
+    useEffect(() => {
+        console.log(allValues)
+        for (const [key, value] of Object.entries(allValues)) {
+            const value = sessionStorage.getItem(key) || ''
+            setValue(key, value)
+        }
+        return () => {
+            for (const [key, value] of Object.entries(allValues)) {
+                sessionStorage.setItem(key, value)
+            }
+        }
+    }, [])
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const values = Object.entries(data);
@@ -46,6 +61,7 @@ const UserFilter = () => {
                     sx={{ marginRight: 2 }}
                 />
                 <Button type='submit'>фильтрануть</Button>
+                <Button onClick={setFilterToDefault}>очистить</Button>
             </ButtonGroup>
         </Container>
     );
