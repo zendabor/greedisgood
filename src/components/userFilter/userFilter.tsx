@@ -1,5 +1,6 @@
 import { userFilter } from "@/consts/userFilterForm";
 import { useUsers } from "@/hooks/useUsers";
+import { debounce } from "@/utils/debounce";
 import { Button, ButtonGroup, Container, Input } from "@mui/material";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -7,26 +8,25 @@ import { useEffect } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 const UserFilter = () => {
-    const { register, handleSubmit, watch, setValue } = useForm();
+    const { register, handleSubmit, setValue, reset } = useForm();
     const { push, query } = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { filteredUsers, setFilterToDefault } = useUsers()
 
-    const allValues = watch();
+    const getValues = () => {
+        for (const [key, value] of Object.entries(userFilter)) {
+            setValue(value, sessionStorage.getItem(value))
+        }
+    }
 
     useEffect(() => {
-        console.log(allValues)
-        for (const [key, value] of Object.entries(allValues)) {
-            const value = sessionStorage.getItem(key) || ''
-            setValue(key, value)
-        }
-        return () => {
-            for (const [key, value] of Object.entries(allValues)) {
-                sessionStorage.setItem(key, value)
-            }
-        }
-    }, [])
+        getValues()
+    }, []);
+
+    useEffect(() => {
+        filteredUsers()
+    }, [query])
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const values = Object.entries(data);
@@ -40,28 +40,37 @@ const UserFilter = () => {
             }
         });
 
-        await push(`${pathname}?${params.toString()}`);
+        if (!!params.size) {
+            await push(`${pathname}?${params.toString()}`);
+        }
     };
 
-    useEffect(() => {
-        filteredUsers()
-    }, [query])
+    const setValues = (key: string, value: string) => {
+        console.log(key, value)
+        sessionStorage.setItem(key, value);
+    }
+
+    const clearAll = async () => {
+        reset()
+        setFilterToDefault()
+        await push(`${pathname}`);
+    }
 
     return (
         <Container sx={{ marginBottom: 3 }}>
             <ButtonGroup component='form' onSubmit={handleSubmit(onSubmit)}>
-                <Input
-                    {...register(userFilter.email)}
-                    placeholder={userFilter.email}
-                    sx={{ marginRight: 2 }}
-                />
-                <Input
-                    {...register(userFilter.name)}
-                    placeholder={userFilter.name}
-                    sx={{ marginRight: 2 }}
-                />
+                {Object.values(userFilter).map(input => {
+                    return (
+                        <Input
+                            {...register(input)}
+                            placeholder={input}
+                            sx={{ marginRight: 2 }}
+                            onChange={e => debounce(setValues(input, e.target.value), 100)}
+                        />
+                    )
+                })}
                 <Button type='submit'>фильтрануть</Button>
-                <Button onClick={setFilterToDefault}>очистить</Button>
+                <Button onClick={clearAll}>очистить</Button>
             </ButtonGroup>
         </Container>
     );
